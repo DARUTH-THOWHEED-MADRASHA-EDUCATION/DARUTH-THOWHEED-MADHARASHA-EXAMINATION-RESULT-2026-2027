@@ -63,8 +63,8 @@
     <div class="small-note">For result corrections, please contact the Madharsha office.</div>
   </footer>
   <script>
-    // Add the secure backend URL after the Excel connection is configured.
-    const RESULT_API_URL = 'PASTE_YOUR_SECURE_RESULT_API_URL_HERE';
+    // Deployed Apps Script Web App endpoint used for student result lookup.
+    const RESULT_API_URL = 'https://script.google.com/macros/s/AKfycbyHbdYFKYkP2evc5R5U9OZt9NuiHQyYEvj-cfCstS0Ea34lNMZX78IG6O4bUnmw9yUR/exec';
 
     const form = document.getElementById('search-form');
     const message = document.getElementById('message');
@@ -94,13 +94,20 @@
     }
 
     async function lookupStudent(registerNumber, dob) {
-      const endpoint = new URL(RESULT_API_URL);
-      endpoint.searchParams.set('registerNumber', registerNumber);
-      endpoint.searchParams.set('dob', dob);
-      const response = await fetch(endpoint, { cache: 'no-store' });
-      if (!response.ok) throw new Error('Could not connect to the results service.');
-      const data = await response.json();
-      return data.ok ? data.student : null;
+      return new Promise((resolve, reject) => {
+        const callback = 'resultCallback_' + Date.now();
+        const script = document.createElement('script');
+        const endpoint = new URL(RESULT_API_URL);
+        endpoint.searchParams.set('registerNumber', registerNumber);
+        endpoint.searchParams.set('dob', dob);
+        endpoint.searchParams.set('callback', callback);
+        const timeout = setTimeout(() => { cleanup(); reject(new Error('Could not connect to the results service.')); }, 12000);
+        function cleanup() { clearTimeout(timeout); delete window[callback]; script.remove(); }
+        window[callback] = data => { cleanup(); resolve(data.ok ? data.student : null); };
+        script.onerror = () => { cleanup(); reject(new Error('Could not connect to the results service.')); };
+        script.src = endpoint.toString();
+        document.body.appendChild(script);
+      });
     }
 
     form.addEventListener('submit', async event => {
@@ -112,7 +119,7 @@
         showMessage('Please enter both your register number and date of birth.', 'error');
         return;
       }
-      if (RESULT_API_URL.startsWith('PASTE_')) { showMessage('The result service is not connected yet. Connect the private Excel backend first.', 'error'); return; }
+      if (RESULT_API_URL.startsWith('PASTE_')) { showMessage('The result service is not connected yet. Complete the backend setup first.', 'error'); return; }
       showMessage('Searching for your result…', 'success');
       try {
         const data = await lookupStudent(registerNumber, dob);
