@@ -100,7 +100,9 @@ async function show(){
     const resp=await fetch(SCRIPT_URL+'?reg='+encodeURIComponent(r)+'&dob='+encodeURIComponent(dob)+'&t='+Date.now(),{method:'GET',cache:'no-store'});
     const s=await resp.json();
     if(!resp.ok || !s.ok){$('err').textContent=s.msg||'Result not found.';return;}
-    const theory=Number(s.theory)||0, internal=Number(s.internal)||0, total=theory+internal;
+    const theory = Number(s.theory) || 0;
+const internal = Number(s.internal) || 0;
+const total = s.total != null ? Number(s.total) : theory + internal;
     const pass=total>=PASS_MARK;
     $('nm').textContent=s.name||'';
     $('mt').textContent='Register No: '+r+' | '+(s.year||'');
