@@ -85,7 +85,7 @@ tfoot td{font-weight:700;border-bottom:0}
 </main>
 <script src="config.js"></script>
 <script>
-const PASS_MARK = 35, MAX = 100;
+const MAX = 100;
 const $ = id => document.getElementById(id);
 function escapeText(value){return String(value ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 async function show(){
@@ -100,15 +100,16 @@ async function show(){
     const resp=await fetch(SCRIPT_URL+'?reg='+encodeURIComponent(r)+'&dob='+encodeURIComponent(dob)+'&t='+Date.now(),{method:'GET',cache:'no-store'});
     const s=await resp.json();
     if(!resp.ok || !s.ok){$('err').textContent=s.msg||'Result not found.';return;}
-    const theory = Number(s.theory) || 0;
+   const theory = Number(s.theory) || 0;
 const internal = Number(s.internal) || 0;
 const total = s.total != null ? Number(s.total) : theory + internal;
-    const pass=total>=PASS_MARK;
+const maxMarks = String(s.year).toUpperCase().includes("FIRST") ? 50 : 75;
+const pass = total > 0;
     $('nm').textContent=s.name||'';
     $('mt').textContent='Register No: '+r+' | '+(s.year||'');
     $('tb').innerHTML='<tr><td>1</td><td>Theory</td><td class="n">'+escapeText(theory)+'</td></tr><tr><td>2</td><td>Internal Mark</td><td class="n">'+escapeText(internal)+'</td></tr>';
-    $('tt').textContent=total+' / '+MAX;
-    $('pc').textContent='Percentage: '+(total/MAX*100).toFixed(1)+'%';
+    $('tt').textContent=total+' / '+maxMarks;
+    $('pc').textContent='';
     const badge=$('st'); badge.textContent=pass?'PASS':'FAIL'; badge.className='badge '+(pass?'pass':'fail');
     $('res').hidden=false;
     $('res').scrollIntoView({behavior:'smooth',block:'start'});
