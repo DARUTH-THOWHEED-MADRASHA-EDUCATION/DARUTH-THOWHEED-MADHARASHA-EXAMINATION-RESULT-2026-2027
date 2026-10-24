@@ -106,7 +106,7 @@ function escapeText(value){return String(value ?? '').replace(/[&<>"']/g,c=>({'&
 async function show(){
   $('err').textContent=''; $('res').hidden=true;
   const r=$('reg').value.trim(), dob=$('dob').value;
-  if(!r||!dob){$('err').textContent='Enter your register number and date of birth.';return;
+if(!r||!dob){$('err').textContent='Enter your register number and date of birth.';return;}
   if(typeof SCRIPT_URL==='undefined'||!SCRIPT_URL||SCRIPT_URL.includes('PASTE')){
     $('err').textContent='Website is not connected to Google Sheets yet. Please check config.js.';return;
   }
