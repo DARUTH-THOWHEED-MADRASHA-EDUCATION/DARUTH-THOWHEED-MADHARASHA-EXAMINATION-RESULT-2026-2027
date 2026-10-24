@@ -106,7 +106,7 @@ function escapeText(value){return String(value ?? '').replace(/[&<>"']/g,c=>({'&
 async function show(){
   $('err').textContent=''; $('res').hidden=true;
   const r=$('reg').value.trim(), dob=$('dob').value;
-  if(!r||!dob){$('err').textContent='Enter your register number and date of birth.';return;}
+  if(!r||!dob){$('err').textContent='Enter your register number and date of birth.';return;
   if(typeof SCRIPT_URL==='undefined'||!SCRIPT_URL||SCRIPT_URL.includes('PASTE')){
     $('err').textContent='Website is not connected to Google Sheets yet. Please check config.js.';return;
   }
@@ -119,7 +119,7 @@ async function show(){
 const internal = Number(s.internal) || 0;
 const total = s.total != null ? Number(s.total) : theory + internal;
 const maxMarks = String(s.year).toUpperCase().includes("FIRST") ? 50 : 75;
-const pass = total > 0;
+const pass = true;
     $('nm').textContent=s.name||'';
     $('mt').textContent='Register No: '+r+' | '+(s.year||'');
     $('tb').innerHTML='<tr><td>1</td><td>Theory</td><td class="n">'+escapeText(theory)+'</td></tr><tr><td>2</td><td>Internal Mark</td><td class="n">'+escapeText(internal)+'</td></tr>';
