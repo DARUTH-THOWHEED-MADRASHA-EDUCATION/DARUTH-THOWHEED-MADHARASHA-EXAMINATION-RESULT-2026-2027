@@ -119,7 +119,7 @@ async function show(){
 const internal = Number(s.internal) || 0;
 const total = s.total != null ? Number(s.total) : theory + internal;
 const maxMarks = String(s.year).toUpperCase().includes("FIRST") ? 50 : 75;
-const pass = true;
+const pass = total > 0;
     $('nm').textContent=s.name||'';
     $('mt').textContent='Register No: '+r+' | '+(s.year||'');
     $('tb').innerHTML='<tr><td>1</td><td>Theory</td><td class="n">'+escapeText(theory)+'</td></tr><tr><td>2</td><td>Internal Mark</td><td class="n">'+escapeText(internal)+'</td></tr>';
